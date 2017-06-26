@@ -42,4 +42,8 @@ public class SequentialSearchST<Key, Value> {
 
         first = new Node(key, value, first);
     }
+
+    public void delete(Key key) {
+
+    }
 }
