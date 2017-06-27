@@ -46,4 +46,9 @@ public class SequentialSearchST<Key, Value> {
     public void delete(Key key) {
 
     }
+
+    public int size() {
+
+        return 0;
+    }
 }
