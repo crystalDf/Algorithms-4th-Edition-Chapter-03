@@ -6,4 +6,9 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
     private Value[] values;
     private int n;
 
+    public BinarySearchST(int capacity) {
+
+        keys = (Key[]) new Comparable[capacity];
+        values = (Value[]) new Object[capacity];
+    }
 }
