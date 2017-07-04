@@ -11,4 +11,11 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         keys = (Key[]) new Comparable[capacity];
         values = (Value[]) new Object[capacity];
     }
+
+    public int size() {
+
+        return n;
+    }
+
+
 }
