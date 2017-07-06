@@ -78,7 +78,7 @@ public class SequentialSearchST<Key, Value> {
         return n == 0;
     }
 
-    public int size() {
+    public int getSize() {
 
         return n;
     }

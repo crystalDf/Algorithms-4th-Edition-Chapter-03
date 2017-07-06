@@ -1,10 +1,22 @@
 package com.star.searching.section01;
 
+
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdOut;
+
 public class BinarySearchST<Key extends Comparable<Key>, Value> {
+
+    private static final int INIT_CAPACITY = 2;
 
     private Key[] keys;
     private Value[] values;
     private int n;
+
+    public BinarySearchST() {
+
+        this(INIT_CAPACITY);
+    }
 
     public BinarySearchST(int capacity) {
 
@@ -22,10 +34,8 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         int i = rank(key);
 
         if (i < n && keys[i].compareTo(key) == 0) {
-
             return values[i];
         } else {
-
             return null;
         }
     }
@@ -38,6 +48,11 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
 
             values[i] = value;
             return;
+        }
+
+        if (n == keys.length) {
+
+            resize(keys.length * 2);
         }
 
         for (int j = n; j > i; j--) {
@@ -56,6 +71,11 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
 
         int i = rank(key);
 
+        if (i == n || keys[i].compareTo(key) != 0) {
+
+            return;
+        }
+
         for (int j = i; j < n - 1; j++) {
 
             keys[j] = keys[j + 1];
@@ -63,6 +83,24 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         }
 
         n--;
+
+        keys[n] = null;
+        values[n] = null;
+
+        if (n > 0 && n == keys.length / 4) {
+
+            resize(keys.length / 2);
+        }
+    }
+
+    public void deleteMin() {
+
+        delete(min());
+    }
+
+    public void deleteMax() {
+
+        delete(max());
     }
 
     private int rank(Key key) {
@@ -92,10 +130,158 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         return n == 0;
     }
 
-    public int size() {
+    public boolean contains(Key key) {
+
+        return get(key) != null;
+    }
+
+    public int getSize() {
 
         return n;
     }
 
+    public int getSize(Key low, Key high) {
 
+        if (low.compareTo(high) > 0) {
+            return 0;
+        } else if (contains(high)) {
+            return rank(high) - rank(low) + 1;
+        } else {
+            return rank(high) - rank(low);
+        }
+    }
+
+    private void resize(int capacity) {
+
+        Key[] tempKeys = (Key[]) new Comparable[capacity];
+        Value[] tempValues = (Value[]) new Object[capacity];
+
+        for (int i = 0; i < n; i++) {
+            tempKeys[i] = keys[i];
+            tempValues[i] = values[i];
+        }
+
+        keys = tempKeys;
+        values = tempValues;
+    }
+
+    public Key min() {
+
+        return keys[0];
+    }
+
+    public Key max() {
+
+        return keys[n - 1];
+    }
+
+    public Key floor(Key key) {
+
+        int i = rank(key);
+
+        if (i < n && keys[i].compareTo(key) == 0) {
+            return keys[i];
+        } else if (i == 0) {
+            return null;
+        } else {
+            return keys[i - 1];
+        }
+    }
+
+    public Key ceiling(Key key) {
+
+        int i = rank(key);
+
+        if (i == n) {
+            return null;
+        } else {
+            return keys[i];
+        }
+    }
+
+    public Key select(int k) {
+
+        return keys[k];
+    }
+
+    public Iterable<Key> keys() {
+
+        return keys(min(), max());
+    }
+
+    public Iterable<Key> keys(Key low, Key high) {
+
+        Queue<Key> queue = new Queue<>();
+
+        if (low.compareTo(high) > 0) {
+
+            return queue;
+        }
+
+        for (int i = rank(low); i < rank(high); i++) {
+
+            queue.enqueue(keys[i]);
+        }
+
+        if (contains(high)) {
+
+            queue.enqueue(keys[rank(high)]);
+        }
+
+        return queue;
+    }
+
+    private boolean check() {
+
+        return isSorted() && rankCheck();
+    }
+
+    private boolean isSorted() {
+
+        for (int i = 1; i < getSize(); i++) {
+
+            if (keys[i].compareTo(keys[i - 1]) < 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean rankCheck() {
+
+        for (int i = 0; i < getSize(); i++) {
+
+            if (i != rank(select(i))) {
+                return false;
+            }
+        }
+
+        for (int i = 0; i < getSize(); i++) {
+
+            if (keys[i].compareTo(select(rank(keys[i]))) != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static void main(String[] args) {
+
+        BinarySearchST<String, Integer> binarySearchST =
+                new BinarySearchST<>();
+
+        String[] array = new In(args[0]).readAllStrings();
+
+        for (int i = 0; i < array.length; i++) {
+
+            binarySearchST.put(array[i], i);
+        }
+
+        for (String string : binarySearchST.keys()) {
+
+            StdOut.println(string + " " + binarySearchST.get(string));
+        }
+    }
 }
