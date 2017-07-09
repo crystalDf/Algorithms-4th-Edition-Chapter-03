@@ -6,7 +6,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class SequentialSearchST<Key, Value> {
 
-    private int n;
+    private int size;
     private Node first;
 
     private class Node {
@@ -47,7 +47,7 @@ public class SequentialSearchST<Key, Value> {
 
         first = new Node(key, value, first);
 
-        n++;
+        size++;
     }
 
     public void delete(Key key) {
@@ -58,7 +58,7 @@ public class SequentialSearchST<Key, Value> {
     private Node delete(Node x, Key key) {
 
         if (key.equals(x.key)) {
-            n--;
+            size--;
 
             return x.next;
         }
@@ -75,12 +75,12 @@ public class SequentialSearchST<Key, Value> {
 
     public boolean isEmpty() {
 
-        return n == 0;
+        return size == 0;
     }
 
     public int getSize() {
 
-        return n;
+        return size;
     }
 
     public Iterable<Key> keys() {

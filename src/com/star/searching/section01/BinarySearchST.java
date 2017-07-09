@@ -11,7 +11,7 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
 
     private Key[] keys;
     private Value[] values;
-    private int n;
+    private int size;
 
     public BinarySearchST() {
 
@@ -27,13 +27,12 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
     public Value get(Key key) {
 
         if (isEmpty()) {
-
             return null;
         }
 
         int i = rank(key);
 
-        if (i < n && keys[i].compareTo(key) == 0) {
+        if (i < size && keys[i].compareTo(key) == 0) {
             return values[i];
         } else {
             return null;
@@ -42,20 +41,25 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
 
     public void put(Key key, Value value) {
 
+        if (value == null) {
+            delete(key);
+            return;
+        }
+
         int i = rank(key);
 
-        if (i < n && keys[i].compareTo(key) == 0) {
+        if (i < size && keys[i].compareTo(key) == 0) {
 
             values[i] = value;
             return;
         }
 
-        if (n == keys.length) {
+        if (size == keys.length) {
 
             resize(keys.length * 2);
         }
 
-        for (int j = n; j > i; j--) {
+        for (int j = size; j > i; j--) {
 
             keys[j] = keys[j - 1];
             values[j] = values[j - 1];
@@ -64,30 +68,33 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         keys[i] = key;
         values[i] = value;
 
-        n++;
+        size++;
     }
 
     public void delete(Key key) {
 
-        int i = rank(key);
-
-        if (i == n || keys[i].compareTo(key) != 0) {
-
+        if (isEmpty()) {
             return;
         }
 
-        for (int j = i; j < n - 1; j++) {
+        int i = rank(key);
+
+        if (i == size || keys[i].compareTo(key) != 0) {
+            return;
+        }
+
+        for (int j = i; j < size - 1; j++) {
 
             keys[j] = keys[j + 1];
             values[j] = values[j + 1];
         }
 
-        n--;
+        size--;
 
-        keys[n] = null;
-        values[n] = null;
+        keys[size] = null;
+        values[size] = null;
 
-        if (n > 0 && n == keys.length / 4) {
+        if (size > 0 && size == keys.length / 4) {
 
             resize(keys.length / 2);
         }
@@ -95,39 +102,20 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
 
     public void deleteMin() {
 
+        if (isEmpty()) {
+            return;
+        }
+
         delete(min());
     }
 
     public void deleteMax() {
 
-        delete(max());
-    }
-
-    private int rank(Key key) {
-
-        int low = 0;
-        int high = n - 1;
-
-        while (low <= high) {
-
-            int middle = low + (high - low) / 2;
-            int cmp = key.compareTo(keys[middle]);
-
-            if (cmp < 0) {
-                high = middle - 1;
-            } else if (cmp > 0) {
-                low = middle + 1;
-            } else {
-                return middle;
-            }
+        if (isEmpty()) {
+            return;
         }
 
-        return low;
-    }
-
-    public boolean isEmpty() {
-
-        return n == 0;
+        delete(max());
     }
 
     public boolean contains(Key key) {
@@ -135,9 +123,14 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         return get(key) != null;
     }
 
+    public boolean isEmpty() {
+
+        return getSize() == 0;
+    }
+
     public int getSize() {
 
-        return n;
+        return size;
     }
 
     public int getSize(Key low, Key high) {
@@ -156,7 +149,7 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         Key[] tempKeys = (Key[]) new Comparable[capacity];
         Value[] tempValues = (Value[]) new Object[capacity];
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < size; i++) {
             tempKeys[i] = keys[i];
             tempValues[i] = values[i];
         }
@@ -172,17 +165,17 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
 
     public Key max() {
 
-        return keys[n - 1];
+        return keys[size - 1];
     }
 
     public Key floor(Key key) {
 
         int i = rank(key);
 
-        if (i < n && keys[i].compareTo(key) == 0) {
-            return keys[i];
-        } else if (i == 0) {
+        if (i == 0) {
             return null;
+        } else if (i < size && keys[i].compareTo(key) == 0) {
+            return keys[i];
         } else {
             return keys[i - 1];
         }
@@ -192,11 +185,33 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
 
         int i = rank(key);
 
-        if (i == n) {
+        if (i == size) {
             return null;
         } else {
             return keys[i];
         }
+    }
+
+    private int rank(Key key) {
+
+        int low = 0;
+        int high = size - 1;
+
+        while (low <= high) {
+
+            int middle = low + (high - low) / 2;
+            int cmp = key.compareTo(keys[middle]);
+
+            if (cmp < 0) {
+                high = middle - 1;
+            } else if (cmp > 0) {
+                low = middle + 1;
+            } else {
+                return middle;
+            }
+        }
+
+        return low;
     }
 
     public Key select(int k) {
