@@ -1,6 +1,5 @@
 package com.star.searching.section03;
 
-import com.star.searching.section02.BST;
 import edu.princeton.cs.algs4.Queue;
 
 public class RedBlackBST<Key extends Comparable<Key>, Value> {
@@ -72,7 +71,6 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     public Value get(Key key) {
 
         return get(root, key);
-
     }
 
     private Value get(Node x, Key key) {

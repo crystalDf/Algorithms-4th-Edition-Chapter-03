@@ -26,7 +26,6 @@ public class BST<Key extends Comparable<Key>, Value> {
     public Value get(Key key) {
 
         return get(root, key);
-
     }
 
     private Value get(Node x, Key key) {
