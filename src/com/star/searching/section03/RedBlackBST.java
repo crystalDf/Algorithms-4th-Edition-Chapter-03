@@ -1,6 +1,8 @@
 package com.star.searching.section03;
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdOut;
 
 public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
@@ -24,6 +26,10 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             this.size = size;
             this.color = color;
         }
+    }
+
+    public RedBlackBST() {
+
     }
 
     private boolean isRed(Node x) {
@@ -63,9 +69,53 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     private void flipColors(Node h) {
 
-        h.color = RED;
-        h.left.color = BLACK;
-        h.right.color = BLACK;
+        h.color = !h.color;
+        h.left.color = !h.left.color;
+        h.right.color = !h.right.color;
+    }
+
+    private Node moveRedLeft(Node h) {
+
+        flipColors(h);
+
+        if (isRed(h.right.left)) {
+            h.right = rotateRight(h.right);
+            h = rotateLeft(h);
+            flipColors(h);
+        }
+
+        return h;
+    }
+
+    private Node moveRedRight(Node h) {
+
+        flipColors(h);
+
+        if (isRed(h.left.left)) {
+            h = rotateRight(h);
+            flipColors(h);
+        }
+
+        return h;
+    }
+
+    private Node balance(Node h) {
+
+        if (isRed(h.right)) {
+            h = rotateLeft(h);
+        }
+
+        if (isRed(h.left) && isRed(h.left.left)) {
+            h = rotateRight(h);
+        }
+
+        if (isRed(h.left) && isRed(h.right)) {
+            flipColors(h);
+        }
+
+        h.size = getSize(h.left) + getSize(h.right) + 1;
+
+        return h;
     }
 
     public Value get(Key key) {
@@ -138,80 +188,123 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     public void delete(Key key) {
 
+        if (!contains(key)) {
+            return;
+        }
+
+        if (!isRed(root.left) && !isRed(root.right)) {
+            root.color = RED;
+        }
+
         root = delete(root, key);
+
+        if (!isEmpty()) {
+            root.color = BLACK;
+        }
 
         assert check();
     }
 
-    private Node delete(Node x, Key key) {
+    private Node delete(Node h, Key key) {
 
-        if (x == null) {
+        if (h == null) {
             return null;
         }
 
-        int cmp = key.compareTo(x.key);
+        if (key.compareTo(h.key) < 0) {
+            if (!isRed(h.left) && !isRed(h.left.left)) {
+                h = moveRedLeft(h);
+            }
 
-        if (cmp < 0) {
-            x.left = delete(x.left, key);
-        } else if (cmp > 0) {
-            x.right = delete(x.right, key);
+            h.left = delete(h.left, key);
         } else {
-            if (x.left == null) {
-                return x.right;
-            }
-            if (x.right == null) {
-                return x.left;
+            if (isRed(h.left)) {
+                h = rotateRight(h);
             }
 
-            Node t = x;
-            x = min(t.right);
-            x.left = t.left;
-            x.right = deleteMin(t.right);
+            if (key.compareTo(h.key) == 0 && h.right == null) {
+                return null;
+            }
+
+            if (!isRed(h.right) && !isRed(h.right.left)) {
+                h = moveRedRight(h);
+            }
+
+            if (key.compareTo(h.key) == 0) {
+                Node x = min(h.right);
+                h.key = x.key;
+                h.value = x.value;
+                h.right = deleteMin(h.right);
+            } else {
+                h.right = delete(h.right, key);
+            }
         }
 
-        x.size = getSize(x.left) + getSize(x.right) + 1;
-
-        return x;
+        return balance(h);
     }
 
     public void deleteMin() {
 
+        if (!isRed(root.left) && !isRed(root.right)) {
+            root.color = RED;
+        }
+
         root = deleteMin(root);
+
+        if (!isEmpty()) {
+            root.color = BLACK;
+        }
 
         assert check();
     }
 
-    private Node deleteMin(Node x) {
+    private Node deleteMin(Node h) {
 
-        if (x.left == null) {
-            return x.right;
+        if (h.left == null) {
+            return null;
         }
 
-        x.left = deleteMin(x.left);
+        if (!isRed(h.left) && !isRed(h.left.left)) {
+            h = moveRedLeft(h);
+        }
 
-        x.size = getSize(x.left) + getSize(x.right) + 1;
+        h.left = deleteMin(h.left);
 
-        return x;
+        return balance(h);
     }
 
     public void deleteMax() {
 
+        if (!isRed(root.left) && !isRed(root.right)) {
+            root.color = RED;
+        }
+
         root = deleteMax(root);
+
+        if (!isEmpty()) {
+            root.color = BLACK;
+        }
 
         assert check();
     }
 
-    private Node deleteMax(Node x) {
+    private Node deleteMax(Node h) {
 
-        if (x.right == null) {
-            return x.left;
+        if (isRed(h.left)) {
+            h = rotateRight(h);
         }
 
-        x.right = deleteMax(x.right);
+        if (h.right == null) {
+            return h.left;
+        }
 
-        x.size = getSize(x.left) + getSize(x.right) + 1;
+        if (!isRed(h.right) && !isRed(h.right.left)) {
+            h = moveRedRight(h);
+        }
 
-        return x;
+        h.right = deleteMax(h.right);
+
+        return balance(h);
     }
 
     public boolean contains(Key key) {
@@ -411,6 +504,10 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     public Iterable<Key> keys() {
 
+        if (isEmpty()) {
+            return new Queue<>();
+        }
+
         return keys(min(), max());
     }
 
@@ -529,5 +626,82 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         }
 
         return true;
+    }
+
+    private boolean isRedBlackBST() {
+
+        return isRedBlackBST(root);
+    }
+
+    private boolean isRedBlackBST(Node x) {
+
+        if (x == null) {
+            return true;
+        }
+
+        if (isRed(x.right)) {
+            return false;
+        }
+
+        if (x != root && isRed(x) && isRed(x.left)) {
+            return false;
+        }
+
+        return isRedBlackBST(x.left) && isRedBlackBST(x.right);
+    }
+
+    private boolean isBalanced() {
+
+        int black = 0;
+
+        Node x = root;
+
+        while (x != null) {
+
+            if (!isRed(x)) {
+                black++;
+            }
+
+            x = x.left;
+        }
+
+        return isBalanced(root, black);
+    }
+
+    private boolean isBalanced(Node x, int black) {
+
+        if (x == null) {
+            return black == 0;
+        }
+
+        if (!isRed(x)) {
+            black--;
+        }
+
+        return isBalanced(x.left, black) && isBalanced(x.right, black);
+    }
+
+    public static void main(String[] args) {
+
+        RedBlackBST<String, Integer> redBlackBST = new RedBlackBST<>();
+
+        String[] array = new In(args[0]).readAllStrings();
+
+        for (int i = 0; i < array.length; i++) {
+
+            redBlackBST.put(array[i], i);
+        }
+
+        for (String string : redBlackBST.levelOrder()) {
+
+            StdOut.println(string + " " + redBlackBST.get(string));
+        }
+
+        StdOut.println();
+
+        for (String string : redBlackBST.keys()) {
+
+            StdOut.println(string + " " + redBlackBST.get(string));
+        }
     }
 }
