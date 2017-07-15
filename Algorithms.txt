@@ -1,0 +1,4 @@
+3.1 com.star.searching.section01.SequentialSearchST
+3.2 com.star.searching.section01.BinarySearchST
+3.3 com.star.searching.section02.BST
+3.4 com.star.searching.section03.RedBlackBST
