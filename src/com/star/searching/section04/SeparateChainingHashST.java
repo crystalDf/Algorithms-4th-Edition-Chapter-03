@@ -46,14 +46,17 @@ public class SeparateChainingHashST<Key, Value> {
     }
 
     public boolean contains(Key key) {
+
         return get(key) != null;
     }
 
     public boolean isEmpty() {
+
         return getSize() == 0;
     }
 
     public int getSize() {
+
         return n;
     }
 
