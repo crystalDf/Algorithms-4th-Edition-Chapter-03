@@ -78,7 +78,7 @@ public class SeparateChainingHashST<Key, Value> {
             resize(m * 2);
         }
 
-        if (sequentialSearchSTS[hash(key)].contains(key)) {
+        if (!sequentialSearchSTS[hash(key)].contains(key)) {
             n++;
         }
 
