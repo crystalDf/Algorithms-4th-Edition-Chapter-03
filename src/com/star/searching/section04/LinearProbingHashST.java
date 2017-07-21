@@ -1,4 +1,4 @@
 package com.star.searching.section04;
 
-public class LinearProbingHashST {
+public class LinearProbingHashST<Key, Value> {
 }
