@@ -7,4 +7,10 @@ public class LinearProbingHashST<Key, Value> {
 
     private Key[] keys;
     private Value[] values;
+
+    public LinearProbingHashST() {
+
+        keys = (Key[]) new Object[m];
+        values = (Value[]) new Object[m];
+    }
 }
