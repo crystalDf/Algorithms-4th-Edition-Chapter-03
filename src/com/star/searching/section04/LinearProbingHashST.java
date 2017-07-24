@@ -13,4 +13,9 @@ public class LinearProbingHashST<Key, Value> {
         keys = (Key[]) new Object[m];
         values = (Value[]) new Object[m];
     }
+
+    private int hash(Key key) {
+
+        return (key.hashCode() & 0x7fffffff) % m;
+    }
 }
