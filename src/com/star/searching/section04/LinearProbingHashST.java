@@ -45,5 +45,9 @@ public class LinearProbingHashST<Key, Value> {
 
     public void put(Key key, Value value) {
 
+        if (n >= m / 2) {
+            resize(m * 2);
+        }
+
     }
 }
