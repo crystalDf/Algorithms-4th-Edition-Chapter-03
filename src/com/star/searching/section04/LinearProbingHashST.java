@@ -49,5 +49,18 @@ public class LinearProbingHashST<Key, Value> {
             resize(m * 2);
         }
 
+        int i;
+
+        for (i = hash(key); keys[i] != null; i = (i + 1) % m) {
+            if (keys[i].equals(key)) {
+                values[i] = value;
+                return;
+            }
+        }
+
+        keys[i] = key;
+        values[i] = value;
+
+        n++;
     }
 }
