@@ -63,4 +63,15 @@ public class LinearProbingHashST<Key, Value> {
 
         n++;
     }
+
+    public Value get(Key key) {
+
+        for (int i = hash(key); keys[i] != null; i = (i + 1) % m) {
+            if (keys[i].equals(key)) {
+                return values[i];
+            }
+        }
+
+        return null;
+    }
 }
