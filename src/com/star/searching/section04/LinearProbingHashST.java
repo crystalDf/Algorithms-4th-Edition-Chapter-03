@@ -74,4 +74,8 @@ public class LinearProbingHashST<Key, Value> {
 
         return null;
     }
+
+    public void delete(Key key) {
+
+    }
 }
