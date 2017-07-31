@@ -2,3 +2,5 @@
 3.2 com.star.searching.section01.BinarySearchST
 3.3 com.star.searching.section02.BST
 3.4 com.star.searching.section03.RedBlackBST
+3.5 com.star.searching.section04.SeparateChainingHashST
+3.6 com.star.searching.section04.LinearProbingHashST
