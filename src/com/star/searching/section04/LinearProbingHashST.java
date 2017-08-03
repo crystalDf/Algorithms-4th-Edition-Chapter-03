@@ -156,7 +156,6 @@ public class LinearProbingHashST<Key, Value> {
     private boolean check() {
 
         for (int i = 0; i < m; i++) {
-
             if (keys[i] != null) {
                 if (get(keys[i]) != values[i]) {
                     return false;
